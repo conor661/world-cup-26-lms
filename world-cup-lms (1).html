@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Last Ma(e)n Standing — World Cup 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #00C853;
+    --red: #FF1744;
+    --gold: #FFD600;
+    --dark: #0a0f0a;
+    --card: #111a11;
+    --border: #1e2e1e;
+    --text: #e8f5e9;
+    --muted: #4a6b4a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Pitch texture bg */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 48px, rgba(255,255,255,.015) 48px, rgba(255,255,255,.015) 50px),
+      repeating-linear-gradient(90deg, transparent, transparent 48px, rgba(255,255,255,.015) 48px, rgba(255,255,255,.015) 50px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container { max-width: 900px; margin: 0 auto; padding: 0 16px; position: relative; z-index: 1; }
+
+  /* HEADER */
+  header {
+    padding: 28px 0 12px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+  .trophy { font-size: 2.5rem; line-height: 1; }
+  header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.2rem, 8vw, 4rem);
+    letter-spacing: 0.06em;
+    color: var(--gold);
+    line-height: 1.05;
+  }
+  header p { color: var(--muted); font-size: .85rem; margin-top: 4px; }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 24px;
+  }
+  .tab {
+    flex: 1;
+    padding: 9px 6px;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: .8rem;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 7px;
+    transition: all .2s;
+    text-align: center;
+  }
+  .tab.active {
+    background: var(--green);
+    color: #000;
+  }
+
+  /* SCREENS */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: .08em;
+    color: var(--green);
+    margin-bottom: 14px;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 14px;
+  }
+
+  /* PLAYERS SETUP */
+  .add-player-row {
+    display: flex; gap: 8px; margin-bottom: 14px;
+  }
+  .add-player-row input {
+    flex: 1;
+    background: #0d150d;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: .9rem;
+    outline: none;
+  }
+  .add-player-row input:focus { border-color: var(--green); }
+  button.btn {
+    background: var(--green);
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: .85rem;
+    cursor: pointer;
+    transition: opacity .15s;
+    white-space: nowrap;
+  }
+  button.btn:hover { opacity: .85; }
+  button.btn.secondary {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+  button.btn.danger {
+    background: transparent;
+    border: 1px solid var(--red);
+    color: var(--red);
+    padding: 6px 10px;
+    font-size: .78rem;
+  }
+  button.btn.gold {
+    background: var(--gold);
+    color: #000;
+  }
+
+  .player-list { display: flex; flex-direction: column; gap: 8px; }
+  .player-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #0d150d;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+  }
+  .player-item .num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    color: var(--muted);
+    width: 22px;
+    text-align: center;
+  }
+  .player-item .name { flex: 1; font-weight: 500; }
+  .player-item .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+  }
+  .player-item.eliminated .status-dot { background: var(--red); }
+  .player-item.eliminated .name { text-decoration: line-through; color: var(--muted); }
+
+  .info-box {
+    background: #0d1f0d;
+    border: 1px solid #1a3a1a;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: .82rem;
+    color: #69a669;
+    line-height: 1.6;
+    margin-bottom: 14px;
+  }
+  .info-box strong { color: var(--green); }
+
+  /* ROUND GRID */
+  .round-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .round-badge {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: .06em;
+  }
+  .round-badge span { color: var(--gold); }
+
+  .pick-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .pick-card {
+    background: #0d150d;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .pick-card .player-name {
+    font-weight: 700;
+    font-size: .9rem;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .pick-card .player-name .lms-badge {
+    font-size: .65rem;
+    background: var(--red);
+    color: white;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: .04em;
+  }
+  .team-select {
+    width: 100%;
+    background: #111a11;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 8px 10px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: .82rem;
+    outline: none;
+    cursor: pointer;
+  }
+  .team-select:focus { border-color: var(--green); }
+  .team-select:disabled { opacity: .5; cursor: not-allowed; }
+
+  .pick-card.eliminated {
+    opacity: .45;
+    position: relative;
+  }
+  .pick-card.eliminated::after {
+    content: 'ELIMINATED';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: .1em;
+    color: var(--red);
+    background: rgba(10,15,10,.7);
+    border-radius: 10px;
+    pointer-events: none;
+  }
+
+  /* RESULTS */
+  .results-round { margin-bottom: 20px; }
+  .results-round-title {
+    font-size: .75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--muted);
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .result-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #0f1a0f;
+    font-size: .85rem;
+  }
+  .result-row .rname { flex: 1; }
+  .result-row .rpick { color: var(--text); }
+  .result-row .routcome {
+    font-weight: 700;
+    font-size: .75rem;
+    padding: 3px 8px;
+    border-radius: 5px;
+  }
+  .routcome.win { background: rgba(0,200,83,.15); color: var(--green); }
+  .routcome.loss { background: rgba(255,23,68,.15); color: var(--red); }
+  .routcome.pending { background: rgba(255,214,0,.1); color: var(--gold); }
+
+  /* LEADERBOARD */
+  .lb-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: #0d150d;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    margin-bottom: 8px;
+    transition: transform .15s;
+  }
+  .lb-row:hover { transform: translateX(3px); }
+  .lb-row.winner { border-color: var(--gold); background: #181400; }
+  .lb-pos {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    width: 28px;
+    text-align: center;
+    color: var(--muted);
+  }
+  .lb-pos.gold { color: var(--gold); }
+  .lb-name { flex: 1; font-weight: 600; }
+  .lb-stats { font-size: .78rem; color: var(--muted); text-align: right; }
+  .lb-alive {
+    font-size: .72rem;
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-weight: 700;
+  }
+  .lb-alive.yes { background: rgba(0,200,83,.15); color: var(--green); }
+  .lb-alive.no { background: rgba(255,23,68,.1); color: var(--red); }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.85);
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 440px;
+    width: 100%;
+  }
+  .modal h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+  .modal p { font-size: .88rem; color: #8ba98b; line-height: 1.6; margin-bottom: 16px; }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+  /* TEAM RESULT INPUT */
+  .match-result-section { margin-bottom: 20px; }
+  .match-group-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    color: var(--muted);
+    letter-spacing: .08em;
+    margin-bottom: 8px;
+  }
+  .match-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 0;
+    border-bottom: 1px solid #0f1a0f;
+    font-size: .85rem;
+    flex-wrap: wrap;
+  }
+  .match-row .teams { flex: 1; min-width: 160px; }
+  .match-row .winner-select {
+    background: #0d150d;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 7px 10px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: .8rem;
+    outline: none;
+    cursor: pointer;
+  }
+  .match-row .winner-select:focus { border-color: var(--green); }
+
+  /* WINNER BANNER */
+  .winner-banner {
+    text-align: center;
+    padding: 40px 20px;
+    display: none;
+  }
+  .winner-banner.show { display: block; }
+  .winner-banner .cup { font-size: 4rem; }
+  .winner-banner h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem;
+    color: var(--gold);
+    letter-spacing: .06em;
+  }
+  .winner-banner p { color: var(--muted); font-size: .9rem; margin-top: 8px; }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+    font-size: .9rem;
+  }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+  .tag {
+    display: inline-block;
+    font-size: .72rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 4px;
+    letter-spacing: .04em;
+  }
+  .tag.green { background: rgba(0,200,83,.15); color: var(--green); }
+  .tag.gold { background: rgba(255,214,0,.1); color: var(--gold); }
+
+  @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+  .screen.active { animation: fadeIn .25s ease; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="trophy">⚽</div>
+    <h1>Last Ma(e)n Standing</h1>
+    <p>World Cup 2026 · USA / Canada / Mexico · 8 Rounds · 11 Jun – 19 Jul</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('setup')">Setup</button>
+    <button class="tab" onclick="switchTab('rules')">Rules</button>
+    <button class="tab" onclick="switchTab('picks')">Picks</button>
+    <button class="tab" onclick="switchTab('results')">Results</button>
+    <button class="tab" onclick="switchTab('leaderboard')">Standings</button>
+  </div>
+
+  <!-- SETUP TAB -->
+  <div id="tab-setup" class="screen active">
+    <div class="section-title">🎮 Tournament Setup</div>
+    <div class="info-box">
+      <strong>How it works:</strong> Each round, every surviving player picks one team to qualify for the next round. If your team qualifies (wins, or draws if the draw rule allows), you survive. <strong>You can never pick the same team twice.</strong> Last player standing wins the pot!
+      <br><br>
+      <strong>Rounds:</strong> 3 group stage gameweeks (one per matchday) + Round of 32, R16, QF, SF, Final = <strong>8 rounds total</strong>.
+    </div>
+
+    <div class="card">
+      <div style="font-weight:700; margin-bottom:6px; font-size:.9rem;">Draw Rule — Group Stage Only</div><div style="font-size:.78rem; color:var(--muted); margin-bottom:10px;">Knockout rounds have no draws — extra time &amp; penalties decide. Only applies to Gameweeks 1–3.</div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn secondary" id="draw-loss-btn" onclick="setDrawRule('loss')" style="font-size:.8rem; padding:8px 12px;">Draw = Out ✗</button>
+        <button class="btn" id="draw-safe-btn" onclick="setDrawRule('safe')" style="font-size:.8rem; padding:8px 12px;">Draw = Qualify ✓</button>
+      </div>
+      <div id="draw-rule-text" style="margin-top:8px; font-size:.78rem; color:var(--muted);"></div>
+    </div>
+
+    <div class="card">
+      <div style="font-weight:700; margin-bottom:12px; font-size:.9rem;">Add Players</div>
+      <div class="add-player-row">
+        <input type="text" id="player-input" placeholder="Enter player name…" onkeydown="if(event.key==='Enter')addPlayer()">
+        <button class="btn" onclick="addPlayer()">Add</button>
+      </div>
+      <div class="player-list" id="player-list"></div>
+    </div>
+
+    <button class="btn gold" style="width:100%; padding:14px; font-size:1rem;" onclick="startTournament()">⚡ Start Tournament</button>
+  </div>
+
+  <!-- RULES TAB -->
+  <div id="tab-rules" class="screen">
+    <div class="section-title">📋 How to Play</div>
+    <div class="card">
+      <div style="font-weight:700; font-size:1rem; color:var(--gold); margin-bottom:14px;">⚽ World Cup 2026 — Last Ma(e)n Standing</div>
+
+      <div style="font-size:.85rem; line-height:1.9;">
+        <div style="margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid var(--border);">
+          💰 <strong>Entry:</strong> £10 cash to Conor before <strong>11 June 2026</strong>. No pay, no play.
+        </div>
+
+        <div style="font-weight:700; font-size:.8rem; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:8px;">The Rules</div>
+        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:16px;">
+          <div style="display:flex; gap:10px;"><span style="color:var(--green); font-weight:700; min-width:18px;">1.</span><span>Each round, pick <strong>one team</strong> to qualify for the next round (i.e. win their match — or draw, depending on the draw rule).</span></div>
+          <div style="display:flex; gap:10px;"><span style="color:var(--green); font-weight:700; min-width:18px;">2.</span><span>If your team qualifies, you survive. <strong>Group stage:</strong> a draw may eliminate you (see draw rule). <strong>Knockout rounds:</strong> no draws exist — if your team loses (including on pens after extra time), you're eliminated.</span></div>
+          <div style="display:flex; gap:10px;"><span style="color:var(--green); font-weight:700; min-width:18px;">3.</span><span>You can <strong>never pick the same team twice</strong> across the whole tournament.</span></div>
+          <div style="display:flex; gap:10px;"><span style="color:var(--gold); font-weight:700; min-width:18px;">ℹ</span><span style="color:#8ba98b;">Knockout rounds have no draws — extra time &amp; penalties decide. If your team loses at any point (including on pens), you're out.</span></div>
+          <div style="display:flex; gap:10px;"><span style="color:var(--green); font-weight:700; min-width:18px;">4.</span><span>Miss the pick deadline = your pick is void and you're <strong>eliminated</strong>.</span></div>
+          <div style="display:flex; gap:10px;"><span style="color:var(--green); font-weight:700; min-width:18px;">5.</span><span>Last person standing <strong>wins the pot</strong>. If multiple players are eliminated in the same round leaving nobody alive, the pot is split equally between those who survived the longest. Same rule applies if multiple players make it to the end.</span></div>
+        </div>
+
+        <div style="font-weight:700; font-size:.8rem; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:8px;">Rounds & Dates</div>
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <div style="display:flex; justify-content:space-between; padding:7px 10px; background:#0d150d; border-radius:7px; border:1px solid var(--border);">
+            <span><span style="color:var(--muted); font-family:'Bebas Neue',sans-serif; font-size:1rem; margin-right:8px;">1</span>Gameweek 1</span>
+            <span style="color:var(--muted); font-size:.8rem;">11–17 Jun</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:7px 10px; background:#0d150d; border-radius:7px; border:1px solid var(--border);">
+            <span><span style="color:var(--muted); font-family:'Bebas Neue',sans-serif; font-size:1rem; margin-right:8px;">2</span>Gameweek 2</span>
+            <span style="color:var(--muted); font-size:.8rem;">18–23 Jun</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:7px 10px; background:#0d150d; border-radius:7px; border:1px solid var(--border);">
+            <span><span style="color:var(--muted); font-family:'Bebas Neue',sans-serif; font-size:1rem; margin-right:8px;">3</span>Gameweek 3</span>
+            <span style="color:var(--muted); font-size:.8rem;">24–27 Jun</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:7px 10px; background:#0d150d; border-radius:7px; border:1px solid var(--border);">
+            <span><span style="color:var(--muted); font-family:'Bebas Neue',sans-serif; font-size:1rem; margin-right:8px;">4</span>Round of 32</span>
+            <span style="color:var(--muted); font-size:.8rem;">28 Jun–1 Jul</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:7px 10px; background:#0d150d; border-radius:7px; border:1px solid var(--border);">
+            <span><span style="color:var(--muted); font-family:'Bebas Neue',sans-serif; font-size:1rem; margin-right:8px;">5</span>Round of 16</span>
+            <span style="color:var(--muted); font-size:.8rem;">2–4 Jul</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:7px 10px; background:#0d150d; border-radius:7px; border:1px solid var(--border);">
+            <span><span style="color:var(--muted); font-family:'Bebas Neue',sans-serif; font-size:1rem; margin-right:8px;">6</span>Quarter-finals</span>
+            <span style="color:var(--muted); font-size:.8rem;">5–6 Jul</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:7px 10px; background:#0d150d; border-radius:7px; border:1px solid var(--border);">
+            <span><span style="color:var(--muted); font-family:'Bebas Neue',sans-serif; font-size:1rem; margin-right:8px;">7</span>Semi-finals</span>
+            <span style="color:var(--muted); font-size:.8rem;">9–10 Jul</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:7px 10px; background:#111400; border-radius:7px; border:1px solid var(--gold);">
+            <span><span style="color:var(--gold); font-family:'Bebas Neue',sans-serif; font-size:1rem; margin-right:8px;">8</span><strong>Final 🏆</strong></span>
+            <span style="color:var(--gold); font-size:.8rem; font-weight:700;">19 Jul</span>
+          </div>
+        </div>
+
+        <div style="margin-top:14px; padding-top:12px; border-top:1px solid var(--border); color:var(--muted); font-size:.78rem;">
+          Picks must be submitted before the first match of each round. Once the commissioner locks picks, no changes are allowed. Good luck! ⚽
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PICKS TAB -->
+  <div id="tab-picks" class="screen">
+    <div id="picks-content">
+      <div class="empty-state">Start the tournament first to lock in picks.</div>
+    </div>
+  </div>
+
+  <!-- RESULTS TAB -->
+  <div id="tab-results" class="screen">
+    <div id="results-content">
+      <div class="empty-state">No rounds completed yet.</div>
+    </div>
+  </div>
+
+  <!-- LEADERBOARD TAB -->
+  <div id="tab-leaderboard" class="screen">
+    <div id="leaderboard-content">
+      <div class="empty-state">Start the tournament to see standings.</div>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h2 id="modal-title">Confirm</h2>
+    <p id="modal-body">Are you sure?</p>
+    <div class="modal-actions">
+      <button class="btn secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn" id="modal-confirm">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---- DATA ----
+const WC_GROUPS = {
+  A: ['Mexico','South Africa','Korea Republic','Czechia'],
+  B: ['Canada','Bosnia & Herzegovina','Qatar','Switzerland'],
+  C: ['Brazil','Morocco','Haiti','Scotland'],
+  D: ['United States','Paraguay','Australia','Türkiye'],
+  E: ['Germany','Curaçao','Ivory Coast','Ecuador'],
+  F: ['Netherlands','Japan','Sweden','Tunisia'],
+  G: ['Belgium','Egypt','Iran','New Zealand'],
+  H: ['Spain','Cape Verde','Saudi Arabia','Uruguay'],
+  I: ['France','Senegal','Iraq','Norway'],
+  J: ['Argentina','Algeria','Austria','Jordan'],
+  K: ['Portugal','DR Congo','Uzbekistan','Colombia'],
+  L: ['England','Croatia','Ghana','Panama']
+};
+
+const KNOCKOUT_ROUNDS = [
+  { id: 'r32', name: 'Round of 32', teams: 'All 32 qualified teams' },
+  { id: 'r16', name: 'Round of 16', teams: '16 remaining teams' },
+  { id: 'qf',  name: 'Quarter-finals', teams: '8 remaining teams' },
+  { id: 'sf',  name: 'Semi-finals', teams: '4 remaining teams' },
+  { id: 'f',   name: 'Final', teams: '2 remaining teams' }
+];
+
+const ALL_TEAMS = Object.values(WC_GROUPS).flat().sort();
+
+// ---- STATE ----
+let state = {
+  started: false,
+  drawRule: 'safe',
+  roundDeadlines: {}, // 'safe' or 'loss'
+  players: [],       // { name, alive, picksUsed:[], roundPicks:{} }
+  currentRound: 0,
+  rounds: [],        // { id, name, picks:{playerName: team}, results:{team: 'W'|'D'|'L'}, processed:bool }
+  picksLocked: false,
+};
+
+const ROUND_DEFS = [
+  { id:'gs1', name:'Gameweek 1', desc:'11–17 Jun · Matchday 1 — all 12 groups kick off' },
+  { id:'gs2', name:'Gameweek 2', desc:'18–23 Jun · Matchday 2 — second group fixtures' },
+  { id:'gs3', name:'Gameweek 3', desc:'24–27 Jun · Matchday 3 — groups concluded' },
+  { id:'r32', name:'Round of 32', desc:'28 Jun–1 Jul · First knockout round' },
+  { id:'r16', name:'Round of 16', desc:'2–4 Jul' },
+  { id:'qf',  name:'Quarter-finals', desc:'5–6 Jul' },
+  { id:'sf',  name:'Semi-finals', desc:'9–10 Jul' },
+  { id:'f',   name:'Final', desc:'19 Jul · New York/New Jersey' },
+];
+
+function save() {
+  try { localStorage.setItem('wc2026lms', JSON.stringify(state)); } catch(e) {}
+}
+function load() {
+  try {
+    const d = localStorage.getItem('wc2026lms');
+    if (d) state = JSON.parse(d);
+  } catch(e) {}
+}
+
+// ---- INIT ----
+load();
+setDrawRule(state.drawRule || 'safe');
+renderPlayers();
+if (state.started) {
+  renderPicks();
+  renderResults();
+  renderLeaderboard();
+}
+
+// ---- TABS ----
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    const tabs = ['setup','rules','picks','results','leaderboard'];
+    t.classList.toggle('active', tabs[i] === name);
+  });
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+}
+
+// ---- DRAW RULE ----
+function setDrawRule(rule) {
+  state.drawRule = rule;
+  document.getElementById('draw-loss-btn').className = 'btn ' + (rule==='loss'?'':'secondary');
+  document.getElementById('draw-safe-btn').className = 'btn ' + (rule==='safe'?'':'secondary');
+  document.getElementById('draw-rule-text').textContent =
+    rule === 'safe' ? 'Group stage only: a draw counts as qualifying — your pick survives if your team draws. In knockout rounds, draws go to extra time/pens — only the eliminated team knocks you out.'
+                    : 'Group stage only: a draw counts as elimination. In knockout rounds, draws go to extra time/pens — only the losing team knocks you out.';
+  save();
+}
+
+// ---- PLAYERS ----
+function addPlayer() {
+  const inp = document.getElementById('player-input');
+  const name = inp.value.trim();
+  if (!name) return;
+  if (state.players.find(p => p.name.toLowerCase()===name.toLowerCase())) {
+    alert('Player already added!'); return;
+  }
+  state.players.push({ name, alive: true, picksUsed: [], roundPicks: {} });
+  inp.value = '';
+  renderPlayers();
+  save();
+}
+
+function removePlayer(idx) {
+  state.players.splice(idx,1);
+  renderPlayers();
+  save();
+}
+
+function renderPlayers() {
+  const list = document.getElementById('player-list');
+  if (!state.players.length) {
+    list.innerHTML = '<div style="color:var(--muted);font-size:.85rem;padding:8px 0;">No players added yet.</div>';
+    return;
+  }
+  list.innerHTML = state.players.map((p,i) => `
+    <div class="player-item ${p.alive===false?'eliminated':''}">
+      <span class="num">${i+1}</span>
+      <span class="name">${p.name}</span>
+      <span class="status-dot"></span>
+      ${!state.started ? `<button class="btn danger" onclick="removePlayer(${i})">✕</button>` : ''}
+    </div>
+  `).join('');
+}
+
+// ---- START ----
+function startTournament() {
+  if (state.players.length < 2) { alert('Add at least 2 players to start.'); return; }
+  showModal(
+    'Start Tournament?',
+    `Starting the Last Ma(e)n Standing tournament with <strong>${state.players.length} players</strong>.<br><br>Round 1: <strong>Group Stage</strong> — 11 Jun 2026.<br><br>This cannot be undone.`,
+    () => {
+      state.started = true;
+      state.currentRound = 0;
+      // Init players
+      state.players.forEach(p => { p.alive=true; p.picksUsed=[]; p.roundPicks={}; });
+      // Init round 1
+      openNewRound();
+      save();
+      renderPlayers();
+      renderPicks();
+      renderLeaderboard();
+      switchTab('picks');
+    }
+  );
+}
+
+function openNewRound() {
+  if (state.currentRound >= ROUND_DEFS.length) return;
+  const def = ROUND_DEFS[state.currentRound];
+  const round = { id: def.id, name: def.name, desc: def.desc, picks: {}, results: {}, processed: false, deadline: state.roundDeadlines[state.currentRound] || '' };
+  state.rounds[state.currentRound] = round;
+  save();
+}
+
+// ---- PICKS ----
+function availableTeams(player) {
+  return ALL_TEAMS.filter(t => !player.picksUsed.includes(t));
+}
+
+function savePick(playerName, team) {
+  if (!state.started) return;
+  const round = state.rounds[state.currentRound];
+  if (!round || round.processed) return;
+  round.picks[playerName] = team;
+  save();
+}
+
+function lockPicks() {
+  const round = state.rounds[state.currentRound];
+  const alivePlayers = state.players.filter(p => p.alive);
+  const missing = alivePlayers.filter(p => !round.picks[p.name]);
+  if (missing.length) {
+    alert('Not all alive players have made their pick: ' + missing.map(p=>p.name).join(', '));
+    return;
+  }
+  showModal('Lock Picks?', 'Once locked, no picks can be changed. Proceed?', () => {
+    round.picksLocked = true;
+    save();
+    renderPicks();
+  });
+}
+
+
+function setDeadline() {
+  const input = document.getElementById('deadline-input');
+  const val = input.value;
+  const round = state.rounds[state.currentRound];
+  if (val) {
+    const d = new Date(val);
+    round.deadline = d.toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  } else {
+    round.deadline = '';
+  }
+  state.roundDeadlines[state.currentRound] = round.deadline;
+  save();
+  renderPicks();
+}
+
+function renderPicks() {
+  const el = document.getElementById('picks-content');
+  if (!state.started) { el.innerHTML = '<div class="empty-state">Start the tournament first.</div>'; return; }
+
+  const round = state.rounds[state.currentRound];
+  if (!round) { el.innerHTML = '<div class="empty-state">Tournament complete.</div>'; return; }
+
+  const alivePlayers = state.players.filter(p => p.alive);
+  const locked = round.picksLocked;
+
+  // Winner check
+  if (alivePlayers.length === 1) {
+    el.innerHTML = `
+      <div class="winner-banner show">
+        <div class="cup">🏆</div>
+        <h2>${alivePlayers[0].name} WINS!</h2>
+        <p>Last Ma(e)n Standing — World Cup 2026</p>
+      </div>`;
+    return;
+  }
+  if (alivePlayers.length === 0) {
+    el.innerHTML = `<div class="empty-state">All players eliminated — it's a draw!</div>`;
+    return;
+  }
+
+  let html = `
+    <div class="round-info">
+      <div>
+        <div class="round-badge">Round <span>${state.currentRound+1}</span> · ${round.name}</div>
+        <div style="font-size:.78rem;color:var(--muted);margin-top:2px;">${round.desc}</div>
+        ${round.deadline ? `<div style="font-size:.78rem;color:var(--gold);margin-top:4px;font-weight:700;">⏰ Deadline: ${round.deadline}</div>` : ''}
+      </div>
+      <div class="tag ${locked?'gold':'green'}">${locked?'🔒 Locked':'Open'}</div>
+    </div>`;
+
+  if (!locked) {
+    html += `<div class="info-box">Each player selects one team. You <strong>cannot reuse</strong> a team you've picked before. Picks visible to all — commissioner should lock before matches begin.</div>`;
+  }
+
+  html += `<div class="pick-grid">`;
+  alivePlayers.forEach(player => {
+    const av = availableTeams(player);
+    const pick = round.picks[player.name] || '';
+    const isElim = !player.alive;
+    html += `
+      <div class="pick-card ${isElim?'eliminated':''}">
+        <div class="player-name">${player.name}
+          ${locked && pick ? `<span style="font-size:.7rem;color:var(--green);margin-left:auto;">${pick}</span>` : ''}
+        </div>
+        <select class="team-select" onchange="savePick('${player.name}', this.value)" ${locked?'disabled':''}>
+          <option value="">— Pick a team —</option>
+          ${ALL_TEAMS.map(t => {
+            const used = player.picksUsed.includes(t);
+            return `<option value="${t}" ${t===pick?'selected':''} ${used?'disabled':''} style="${used?'color:#333':''}">
+              ${t}${used?' (used)':''}
+            </option>`;
+          }).join('')}
+        </select>
+      </div>`;
+  });
+  html += `</div>`;
+
+  if (!locked) {
+    html += `
+      <div class="card">
+        <div style="font-weight:700; margin-bottom:10px; font-size:.9rem;">Set Pick Deadline (optional)</div>
+        <div style="display:flex; gap:8px; margin-bottom:12px;">
+          <input type="datetime-local" id="deadline-input" value="${round.deadline || ''}" style="flex:1; padding:10px 12px; background:#0d150d; border:1px solid var(--border); border-radius:8px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:.85rem;" />
+          <button class="btn secondary" onclick="setDeadline()">Set</button>
+        </div>
+        <div style="font-size:.75rem; color:var(--muted);">Players will see this countdown. You can clear it anytime.</div>
+      </div>
+      <button class="btn gold" style="width:100%;padding:13px;font-size:.95rem;" onclick="lockPicks()">🔒 Lock All Picks</button>`;
+  } else {
+    html += `
+      <div class="section-title" style="margin-top:20px;">Enter Match Results</div>
+      <div class="info-box">Mark whether each picked team <strong>Won</strong> (qualifies), <strong>Drew</strong>, or <strong>Lost</strong>. Then process the round.</div>
+      <div id="result-inputs">`;
+    // Unique teams picked
+    const pickedTeams = [...new Set(Object.values(round.picks))];
+    pickedTeams.forEach(team => {
+      const cur = round.results[team] || '';
+      html += `
+        <div class="match-row">
+          <div class="teams"><strong>${team}</strong></div>
+          <select class="winner-select" onchange="setTeamResult('${team}', this.value)">
+            <option value="">Result?</option>
+            <option value="W" ${cur==='W'?'selected':''}>✅ Win (qualifies)</option>
+            <option value="D" ${cur==='D'?'selected':''}>🟡 Draw</option>
+            <option value="L" ${cur==='L'?'selected':''}>❌ Loss</option>
+          </select>
+        </div>`;
+    });
+    html += `</div>
+      <button class="btn" style="width:100%;margin-top:16px;padding:13px;font-size:.95rem;" onclick="processRound()">⚡ Process Round & Eliminate</button>`;
+  }
+
+  el.innerHTML = html;
+}
+
+function setTeamResult(team, result) {
+  const round = state.rounds[state.currentRound];
+  round.results[team] = result;
+  save();
+}
+
+function processRound() {
+  const round = state.rounds[state.currentRound];
+  const alivePlayers = state.players.filter(p => p.alive);
+
+  // Check all picked teams have results
+  const pickedTeams = [...new Set(Object.values(round.picks))];
+  const missing = pickedTeams.filter(t => !round.results[t]);
+  if (missing.length) {
+    alert('Missing results for: ' + missing.join(', '));
+    return;
+  }
+
+  showModal('Process Round?', 'This will eliminate players whose picks lost. This cannot be undone.', () => {
+    // Determine survival
+    alivePlayers.forEach(player => {
+      const pick = round.picks[player.name];
+      if (!pick) { player.alive = false; return; }
+      const result = round.results[pick];
+      const survives = result === 'W' || (result === 'D' && state.drawRule === 'safe');
+      if (!survives) player.alive = false;
+      // Add to used picks
+      if (!player.picksUsed.includes(pick)) player.picksUsed.push(pick);
+      player.roundPicks[round.id] = pick;
+    });
+
+    round.processed = true;
+    state.currentRound++;
+
+    // Check end conditions
+    const stillAlive = state.players.filter(p => p.alive);
+    if (stillAlive.length > 1 && state.currentRound < ROUND_DEFS.length) {
+      openNewRound();
+    }
+
+    save();
+    renderPlayers();
+    renderPicks();
+    renderResults();
+    renderLeaderboard();
+    switchTab('leaderboard');
+  });
+}
+
+// ---- RESULTS ----
+function renderResults() {
+  const el = document.getElementById('results-content');
+  const processed = state.rounds.filter(r => r.processed);
+  if (!processed.length) { el.innerHTML = '<div class="empty-state">No rounds completed yet.</div>'; return; }
+
+  let html = '';
+  processed.forEach((round, ri) => {
+    html += `<div class="results-round">
+      <div class="results-round-title">Round ${ri+1} — ${round.name}</div>`;
+    state.players.forEach(player => {
+      const pick = round.picks[player.name];
+      if (!pick) return;
+      const result = round.results[pick];
+      const survived = result === 'W' || (result === 'D' && state.drawRule === 'safe');
+      html += `<div class="result-row">
+        <span class="rname">${player.name}</span>
+        <span class="rpick">${pick}</span>
+        <span class="routcome ${survived?'win':'loss'}">${survived?'SURVIVED':'ELIMINATED'}</span>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+  el.innerHTML = html;
+}
+
+// ---- LEADERBOARD ----
+function renderLeaderboard() {
+  const el = document.getElementById('leaderboard-content');
+  if (!state.started) { el.innerHTML = '<div class="empty-state">Start the tournament to see standings.</div>'; return; }
+
+  const alivePlayers = state.players.filter(p => p.alive);
+  const sorted = [...state.players].sort((a,b) => {
+    if (a.alive && !b.alive) return -1;
+    if (!a.alive && b.alive) return 1;
+    return b.picksUsed.length - a.picksUsed.length;
+  });
+
+  // Winner banner
+  let html = '';
+  if (alivePlayers.length === 1) {
+    html += `<div class="winner-banner show">
+      <div class="cup">🏆</div>
+      <h2>${alivePlayers[0].name} WINS!</h2>
+      <p>Last Ma(e)n Standing — World Cup 2026 Champion</p>
+    </div><hr class="divider">`;
+  }
+
+  html += `<div class="section-title">Standings</div>`;
+  sorted.forEach((p, i) => {
+    const isWinner = alivePlayers.length===1 && p.alive;
+    html += `<div class="lb-row ${isWinner?'winner':''}">
+      <div class="lb-pos ${i===0?'gold':''}">${i+1}</div>
+      <div class="lb-name">${isWinner?'🏆 ':''}${p.name}</div>
+      <div class="lb-stats">${p.picksUsed.length} round${p.picksUsed.length!==1?'s':''} survived</div>
+      <div class="lb-alive ${p.alive?'yes':'no'}">${p.alive?'ALIVE':'OUT'}</div>
+    </div>`;
+  });
+
+  // Stats
+  html += `<hr class="divider"><div class="section-title">Tournament Info</div>
+  <div class="card" style="font-size:.83rem; line-height:2;">
+    <div>⚽ <strong>Tournament:</strong> FIFA World Cup 2026</div>
+    <div>📅 <strong>Dates:</strong> 11 Jun – 19 Jul 2026</div>
+    <div>🌎 <strong>Host:</strong> USA, Canada, Mexico</div>
+    <div>👥 <strong>Players alive:</strong> ${alivePlayers.length} / ${state.players.length}</div>
+    <div>🔄 <strong>Current round:</strong> ${state.currentRound < ROUND_DEFS.length ? `${state.currentRound+1}/8 — ${ROUND_DEFS[state.currentRound].name}` : 'Tournament complete'}</div>
+    <div>📐 <strong>Draw rule:</strong> Draw = ${state.drawRule==='safe'?'Survival':'Elimination'}</div>
+  </div>
+  <button class="btn danger" style="margin-top:8px; width:100%;" onclick="resetTournament()">🗑 Reset Tournament</button>`;
+
+  el.innerHTML = html;
+}
+
+// ---- RESET ----
+function resetTournament() {
+  showModal('Reset Tournament?', 'This will <strong>delete all data</strong> and start fresh. This cannot be undone.', () => {
+    state = { started:false, drawRule:'safe', players:[], currentRound:0, rounds:[], picksLocked:false };
+    save();
+    renderPlayers();
+    document.getElementById('picks-content').innerHTML = '<div class="empty-state">Start the tournament first to lock in picks.</div>';
+    document.getElementById('results-content').innerHTML = '<div class="empty-state">No rounds completed yet.</div>';
+    document.getElementById('leaderboard-content').innerHTML = '<div class="empty-state">Start the tournament to see standings.</div>';
+    setDrawRule('safe');
+    switchTab('setup');
+  });
+}
+
+// ---- MODAL ----
+let _modalCb = null;
+function showModal(title, body, cb) {
+  document.getElementById('modal-title').innerHTML = title;
+  document.getElementById('modal-body').innerHTML = body;
+  _modalCb = cb;
+  const confirmBtn = document.getElementById('modal-confirm');
+  confirmBtn.onclick = () => { 
+    _modalCb(); 
+    closeModal(); 
+  };
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  _modalCb = null;
+}
+// Setup modal overlay click-outside-to-close
+setTimeout(() => {
+  const modal = document.getElementById('modal');
+  if (modal) {
+    modal.addEventListener('click', e => {
+      if (e.target === modal) closeModal();
+    });
+  }
+}, 100);
+</script>
+</body>
+</html>
